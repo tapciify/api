@@ -1,17 +1,10 @@
 pub mod routes;
 
 use routes::create_routes;
-use std::env;
 
-#[tokio::main]
-async fn main() {
-    tracing_subscriber::fmt::init();
+#[shuttle_runtime::main]
+async fn main() -> shuttle_axum::ShuttleAxum {
+    let router = create_routes();
 
-    let app = create_routes();
-
-    let port = env::var("PORT").map_or(3000, |port| port.parse().unwrap());
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", port))
-        .await
-        .unwrap();
-    axum::serve(listener, app).await.unwrap();
+    Ok(router.into())
 }
